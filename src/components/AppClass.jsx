@@ -6,7 +6,7 @@ import { searchImage } from './FetchAPI/FetchAPI';
 import { Modal } from './Modal/Modal';
 import { Component } from 'react';
 
-import { useState } from 'react';
+
 export class App extends Component {
   state = {
     searhQuerry: '',

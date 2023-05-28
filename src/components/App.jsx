@@ -17,18 +17,20 @@ export function App () {
    const [isLoading, setIsLoading] = useState (false);
    const [showModal,setShowModal] = useState (false);
    const [modalImgUrl, setModalImgUrl] = useState('');
-   const [total, setTotal] = useState (0);
+   const [total,setTotal] = useState (0);
 
   
 useEffect (() =>{
-  setIsLoading(true);
-  if (searhQuerry) {
+  // setIsLoading(true);
+  if (!!searhQuerry) {
         getSearchImage(searhQuerry, page)
-      .then(({ hits }) => {
+      .then(({ hits,totalHits }) => {
         if (hits.length === 0) {
           alert('Enter the correct data for the request');
         }
         setPictures(prev => [...prev, ...hits]);
+        setTotal(state => state = totalHits);
+
       })
       .finally(() => {
         setIsLoading(false);
@@ -51,8 +53,8 @@ useEffect (() =>{
 
   };
 
-  showModal = modalImgUrl => {
-setModalImgUrl(modalImgUrl), 
+ const onModal = modalImgUrl => {
+setModalImgUrl(modalImgUrl); 
 setShowModal(true);
     
   };
@@ -70,7 +72,7 @@ setShowModal(true);
           resetPage={page}
           clearPictures={pictures}
         />
-        <ImageGallery images={pictures} showModal={this.showModal} />
+        <ImageGallery images={pictures} showModal={onModal} />
         <Loader visible={isLoading} />
         {pictures.length > 0 &&
           !isLoading &&
