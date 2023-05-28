@@ -2,7 +2,7 @@ import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { SearchBar } from './Searchbar/SearchBar';
-import { searchImage } from './FetchAPI/FetchAPI';
+import { getSearchImage } from './FetchAPI/FetchAPI';
 import { Modal } from './Modal/Modal';
 // import { Component } from 'react';
 
@@ -21,39 +21,24 @@ export function App () {
 
   
 useEffect (() =>{
-  i
-})
-
-  componentDidUpdate(_, prevState) {
-    if (
-      prevState.searhQuerry !== this.state.searhQuerry ||
-      prevState.page !== this.state.page
-    ) {
-      this.setState({
-        isLoading: true,
+  setIsLoading(true);
+  if (searhQuerry) {
+        getSearchImage(searhQuerry, page)
+      .then(({ hits }) => {
+        if (hits.length === 0) {
+          alert('Enter the correct data for the request');
+        }
+        setPictures(prev => [...prev, ...hits]);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-      searchImage(this.state.searhQuerry, this.state.page)
-        .then(({ hits, totalHits }) => {
-          if (hits.length === 0) {
-            alert('Enter the correct data for the request');
-          }
-
-          this.setState(prevState => ({
-            pictures: [...prevState.pictures, ...hits],
-          }));
-
-          this.setState({
-            total: totalHits,
-          });
-        })
-        .finally(() => {
-          this.setState({
-            isLoading: false,
-          });
-        });
-    }
   }
-   nextPage = () => {
+}, [searhQuerry, page]);
+
+    
+   
+  const nextPage = () => {
  setPage(state => state + 1);
 
  
@@ -62,12 +47,12 @@ useEffect (() =>{
  const handleFormSubmit = searhQuerry => {
   setPage(1);
   setPictures([]);
-  setSearhQuerry(); 
+  setSearhQuerry(searhQuerry.trim()); 
 
   };
 
   showModal = modalImgUrl => {
-setModalImgUrl,
+setModalImgUrl(modalImgUrl), 
 setShowModal(true);
     
   };
@@ -77,29 +62,29 @@ setShowModal(true);
     
   };
 
-  render() {
+ 
     return (
       <div className="App">
         <SearchBar
-          onSubmit={this.handleFormSubmit}
-          resetPage={this.state.page}
-          clearPictures={this.state.pictures}
+          onSubmit={handleFormSubmit}
+          resetPage={page}
+          clearPictures={pictures}
         />
-        <ImageGallery images={this.state.pictures} showModal={this.showModal} />
-        <Loader visible={this.state.isLoading} />
-        {this.state.pictures.length > 0 &&
-          !this.state.isLoading &&
-           this.state.total > (this.state.page*12) && (
-            <Button onClick={this.nextPage} />
+        <ImageGallery images={pictures} showModal={this.showModal} />
+        <Loader visible={isLoading} />
+        {pictures.length > 0 &&
+          !isLoading &&
+           total > (page*12) && (
+            <Button onClick={nextPage} />
           )}
-        {this.state.showModal && (
+        {showModal && (
           <Modal
-            modalImgUrl={this.state.modalImgUrl}
-            closeModal={this.closeModal}
+            modalImgUrl={modalImgUrl}
+            closeModal={closeModal}
           />
         )}
       </div>
     );
-  }
+  
 }
 
